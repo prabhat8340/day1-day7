@@ -65,7 +65,7 @@ day6p2 bpf
 
 #include <stdio.h>
 
-#define MAX 5
+#define MAX 8
 
 // Function to perform BFS
 void BFS(int adj[MAX][MAX], int n, int start) {
