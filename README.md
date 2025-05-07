@@ -1,320 +1,69 @@
-# day1-day7
-//mergebinary
+day7p1 knsapack hai 
+day7p2 job sequincing 
 #include <stdio.h>
+#include <string.h>
 
-void merge(int arr[], int left, int mid, int right) {
-    int i, j, k;
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
-    
-    int L[n1], R[n2];
-    
-    for (i = 0; i < n1; i++)
-        L[i] = arr[left + i];
-    for (j = 0; j < n2; j++)
-        R[j] = arr[mid + 1 + j];
-    
-    i = 0; j = 0; k = left;
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
-            arr[k] = L[i];
-            i++;
-        } else {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
-    }
-    
-    while (i < n1) {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
-    
-    while (j < n2) {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
-}
+struct Job {
+    char id[5];
+    int deadline, profit;
+};
 
-void merge_sort(int arr[], int left, int right) {
-    if (left < right) {
-        int mid = left + (right - left) / 2;
-        merge_sort(arr, left, mid);
-        merge_sort(arr, mid + 1, right);
-        merge(arr, left, mid, right);
-    }
-}
-
-int binary_search(int arr[], int left, int right, int target) {
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] == target)
-            return mid;
-        else if (arr[mid] < target)
-            left = mid + 1;
-        else
-            right = mid - 1;
-    }
-    return -1;
-}
-
-int main() {
-    int i, n, target;
-    printf("Enter the number of elements in array:\n");
-    scanf("%d", &n);
-    
-    int arr[n];
-    printf("Enter the elements of the array:\n");
-    for (i = 0; i < n; i++)
-        scanf("%d", &arr[i]);
-    
-    merge_sort(arr, 0, n - 1);
-    
-    printf("Sorted array:\n");
-    for (i = 0; i < n; i++)
-        printf("%d\n", arr[i]);
-    printf("\n");
-    
-    printf("Enter the element to be searched: ");
-    scanf("%d", &target);
-    
-    int ind = binary_search(arr, 0, n - 1, target);
-    if (ind != -1)
-        printf("Element %d found at index %d\n", target, ind);
-    else
-        printf("Element %d not found\n", target);
-    
-    return 0;
-}
-
-
-day2 1.WAP IN C TO COMPUTE X^N, WHERE BOTH X AND N ARE INTEGERS. ONE COMPUTES IT IN O(N) TIME AND THE OTHER IN O(LOGN) TIME.
-#include <stdio.h>
-#include <time.h>
-
-// O(N) method: Iterative multiplication
-int power_linear(int x, int n) {
-    int result = 1;
-    int i;
-    for (i = 0; i < n; i++) {
-        result *= x;
-    }
-    return result;
-}
-
-// O(log N) method: Exponentiation by Squaring
-int power_log(int x, int n) {
-    if (n == 0) 
-		return 1;
-    int half = power_log(x, n / 2);
-    if (n % 2 == 0) 
-        return half * half;
-    else 
-        return x * half * half;
-}
-
-int main() {
-    int x, n;
-    clock_t start, end;
-    double time_taken;
-    
-    printf("Enter base (x) and exponent (n): ");
-    scanf("%d %d", &x, &n);
-    
-    // Measure time for O(N) method
-    start = clock();
-    int result_linear = power_linear(x, n);
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Power computed in O(N) time: %d\n", result_linear);
-    printf("Time taken: %f seconds\n",time_taken);
-    
-    // Measure time for O(log N) method
-    start = clock();
-    int result_log = power_log(x, n);
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Power computed in O(log N) time: %d \n", result_log);
-	printf("Time taken: %f seconds\n", time_taken);
-    
-    return 0;
-}
-2. WAP IN C TO GENERATE TWO 3x3 MATRICES CONTAINING RANDOM NUMBERS BETWEEN 1 TO 100 AND STORE THEM IN TWO TEXT FILES MATRIX1.TXT AND MATRIX.2 TXT RESPECTIVELY. MULTIPLY BOTH OF THE MATRICES BY READING VALUES FROM THE FILES AND DISPLAY THE RESULT.
-  #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#define SIZE 3
-
-void generate_and_save_matrix(const char *filename) {
-    FILE *fp = fopen(filename, "w");
-    if (fp == NULL) {
-        printf("Error opening file %s for writing.\n", filename);
-        exit(1);
-    }
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            int num = rand() % 100 + 1;  // Random number between 1-100
-            fprintf(fp, "%d ", num);
-        }
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-}
-
-void read_matrix(const char *filename, int matrix[SIZE][SIZE]) {
-    FILE *fp = fopen(filename, "r");
-    if (fp == NULL) {
-        printf("Error opening file %s for reading.\n", filename);
-        exit(1);
-    }
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            fscanf(fp, "%d", &matrix[i][j]);
-        }
-    }
-    fclose(fp);
-}
-
-void multiply_matrices(int mat1[SIZE][SIZE], int mat2[SIZE][SIZE], int result[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            result[i][j] = 0;
-            for (int k = 0; k < SIZE; k++) {
-                result[i][j] += mat1[i][k] * mat2[k][j];
+void sortByProfit(struct Job arr[], int n) {
+    for (int i = 0; i < n -1; i++) {
+        for (int j = 0; j < n - i -1; j++) {
+            if (arr[j].profit < arr[j+1].profit) {
+                struct Job temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
             }
         }
     }
 }
 
-void print_matrix(int matrix[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            printf("%5d ", matrix[i][j]);
+void jobSequencing(struct Job arr[], int n) {
+    int result[n];
+    int slot[n];
+    memset(slot, 0, sizeof(slot));
+
+    sortByProfit(arr, n);
+
+    int totalProfit = 0;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = arr[i].deadline -1; j >=0; j--) {
+            if (slot[j] == 0) {
+                result[j] = i;
+                slot[j] = 1;
+                totalProfit += arr[i].profit;
+                break;
+            }
         }
-        printf("\n");
     }
+
+    printf("Scheduled Jobs: ");
+    for (int i = 0; i < n; i++) {
+        if (slot[i])
+            printf("%s ", arr[result[i]].id);
+    }
+    printf("\nTotal Profit: %d\n", totalProfit);
 }
 
 int main() {
-    srand(time(0));  // Seed random number generator
-
-    // Generate and save matrices
-    generate_and_save_matrix("MATRIX1.TXT");
-    generate_and_save_matrix("MATRIX2.TXT");
-
-    int matrix1[SIZE][SIZE], matrix2[SIZE][SIZE], result[SIZE][SIZE];
-
-    // Read matrices from files
-    read_matrix("MATRIX1.TXT", matrix1);
-    read_matrix("MATRIX2.TXT", matrix2);
-
-    // Multiply matrices
-    multiply_matrices(matrix1, matrix2, result);
-
-    printf("Matrix 1:\n");
-    print_matrix(matrix1);
-
-    printf("\nMatrix 2:\n");
-    print_matrix(matrix2);
-
-    printf("\nResultant Matrix (Matrix1 x Matrix2):\n");
-    print_matrix(result);
-
+    int n;
+    printf("Enter number of jobs: ");
+    scanf("%d", &n);
+    struct Job arr[n];
+    printf("Enter job id, deadline, profit:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%s %d %d", arr[i].id, &arr[i].deadline, &arr[i].profit);
+    }
+    jobSequencing(arr, n);
     return 0;
 }
-day6 p1 WAP in C to implement Heap Sort Algorithm on 5 different inputs of randomly generated 1000 numbers of integers written on a file. Print the average numbers of comparisons
+
+day6p2 bpf
+
 #include <stdio.h>
-#define SIZE 100
-#define TESTS 5
-
-int comparisons = 0;
-
-// Function to generate and store random numbers in a file
-void generate_numbers(const char *filename) {
-    FILE *file = fopen(filename, "w");
-    int i;
-    for (i = 0; i < SIZE; i++) {
-        fprintf(file, "%d\n", rand() % 10000);
-    }
-    fclose(file);
-}
-
-// Function to read numbers from a file  
-void read_numbers(const char *filename, int arr[SIZE]) {
-    FILE *file = fopen(filename, "r");
-    int i;
-    for (i = 0; i < SIZE; i++) {
-        fscanf(file, "%d", &arr[i]);
-    }
-    fclose(file);
-}
-
-// Heapify function
-void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-    
-    if (left < n) {
-        comparisons++;
-        if (arr[left] > arr[largest])
-            largest = left;
-    }
-    
-    if (right < n) {
-        comparisons++;
-        if (arr[right] > arr[largest])
-            largest = right;
-    }
-    
-    if (largest != i) {
-        int temp = arr[i];
-        arr[i] = arr[largest];
-        arr[largest] = temp;
-        heapify(arr, n, largest);
-    }
-}
-
-// Heap Sort function
-void heap_sort(int arr[], int n) {
-	int i;
-    for (i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
-    
-    for (i = n - 1; i > 0; i--) {
-        int temp = arr[0];
-        arr[0] = arr[i];
-        arr[i] = temp;
-        heapify(arr, i, 0);
-    }
-}
-
-int main() {
-    
-    char filename[] = "numbers.txt";
-    
-    int total_comparisons = 0;
-    int t;
-    
-    for (t = 0; t < TESTS; t++) {
-        generate_numbers(filename);
-        int arr[SIZE];
-        read_numbers(filename, arr);
-        comparisons = 0;
-        heap_sort(arr, SIZE);
-        total_comparisons += comparisons;
-    }
-    
-    printf("\nAverage Comparisons: %d\n", total_comparisons / TESTS);
-    
-    return 0;
-}
-day6p2 WAP in C to implement BFS Algorithm using Adjacency Matrix.
-  #include <stdio.h>
 
 #define MAX 5
 
@@ -364,310 +113,181 @@ int main() {
     
     return 0;
 }
-day7p1 WAP in C to implement optimal solution of  Fractional Knapsack Problem using Greedy Approach
+
+daylast p1
+// frist wala 
 #include <stdio.h>
+#include <limits.h>
 
-struct Item {
-    int weight;
-    int price;
-};
+#define V 10
 
-// Swap function
-void swap(struct Item *a, struct Item *b) {
-    struct Item temp = *a;
-    *a = *b;
-    *b = temp;
+int minDistance(int dist[], int sptSet[], int n) {
+    int min = INT_MAX, min_index = -1;
+
+    for (int v = 0; v < n; v++)
+        if (sptSet[v] == 0 && dist[v] <= min)
+            min = dist[v], min_index = v;
+
+    return min_index;
 }
 
-// Sort items by price/weight ratio in descending order
-void sortByRatio(struct Item items[], int n) {
-	int i, j;
-    for (i = 0; i < n - 1; i++) {
-        for (j = i + 1; j < n; j++) {
-            float r1 = (float)items[i].price / items[i].weight;
-            float r2 = (float)items[j].price / items[j].weight;
-            if (r1 < r2) {
-                swap(&items[i], &items[j]);
+void dijkstra(int graph[V][V], int src, int n) {
+    int dist[V];
+    int sptSet[V];
+
+    for (int i = 0; i < n; i++)
+        dist[i] = INT_MAX, sptSet[i] = 0;
+
+    dist[src] = 0;
+
+    for (int count = 0; count < n - 1; count++) {
+        int u = minDistance(dist, sptSet, n);
+        if (u == -1) break;  // No reachable vertex
+        sptSet[u] = 1;
+
+        for (int v = 0; v < n; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX &&
+                dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+
+    printf("Vertex \t Distance from Source\n");
+    for (int i = 0; i < n; i++) {
+        if (dist[i] == INT_MAX)
+            printf("%d \t INF\n", i);
+        else
+            printf("%d \t %d\n", i, dist[i]);
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter number of vertices (max %d): ", V);
+    scanf("%d", &n);
+
+    if (n <= 0 || n > V) {
+        printf("Invalid number of vertices! Must be between 1 and %d.\n", V);
+        return 1;
+    }
+
+    int graph[V][V];
+    printf("Enter the adjacency matrix (use 0 if no edge):\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &graph[i][j]);
+
+    int src;
+    printf("Enter source vertex (0 to %d): ", n - 1);
+    scanf("%d", &src);
+
+    if (src < 0 || src >= n) {
+        printf("Invalid source vertex! Must be between 0 and %d.\n", n - 1);
+        return 1;
+    }
+
+    dijkstra(graph, src, n);
+
+    return 0;
+}
+
+// or ye second hai agar sir bole to
+
+#include <stdio.h>
+#include <limits.h>
+
+#define V 10
+
+int minDistance(int dist[], int sptSet[], int n) {
+    int min = INT_MAX, min_index;
+
+    for (int v = 0; v < n; v++)
+        if (sptSet[v] == 0 && dist[v] <= min)
+            min = dist[v], min_index = v;
+
+    return min_index;
+}
+
+void dijkstra(int graph[V][V], int src, int n) {
+    int dist[V];
+    int sptSet[V];
+
+    for (int i = 0; i < n; i++)
+        dist[i] = INT_MAX, sptSet[i] = 0;
+
+    dist[src] = 0;
+
+    for (int count = 0; count < n - 1; count++) {
+        int u = minDistance(dist, sptSet, n);
+        sptSet[u] = 1;
+
+        for (int v = 0; v < n; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX &&
+                dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+
+    printf("Vertex \t Distance from Source\n");
+    for (int i = 0; i < n; i++)
+        printf("%d \t %d\n", i, dist[i]);
+}
+
+int main() {
+    int n;
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    int graph[V][V];
+    printf("Enter the adjacency matrix (use 0 if no edge):\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &graph[i][j]);
+
+    int src;
+    printf("Enter source vertex (0 to %d): ", n - 1);
+    scanf("%d", &src);
+
+    dijkstra(graph, src, n);
+
+    return 0;
+}
+
+daylastp2
+#include <stdio.h>
+#include <limits.h>
+
+void matrixChainOrder(int p[], int n) {
+    int m[n][n];
+
+    for (int i = 1; i < n; i++)
+        m[i][i] = 0;
+
+    for (int L = 2; L < n; L++) {
+        for (int i = 1; i < n - L + 1; i++) {
+            int j = i + L - 1;
+            m[i][j] = INT_MAX;
+            for (int k = i; k <= j - 1; k++) {
+                int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+                if (q < m[i][j])
+                    m[i][j] = q;
             }
         }
     }
-}
 
-// Fractional Knapsack function
-float fractionalKnapsack(int capacity, struct Item items[], int n) {
-    sortByRatio(items, n);
-    float totalValue = 0.0f;
-	int i;
-    for (i = 0; i < n && capacity > 0; i++) {
-        if (items[i].weight <= capacity) {
-            totalValue += items[i].price;
-            capacity -= items[i].weight;
-        } else {
-            totalValue += (float)items[i].price * capacity / items[i].weight;
-            break;
-        }
-    }
-
-    return totalValue;
+    printf("Minimum number of multiplications: %d\n", m[1][n - 1]);
 }
 
 int main() {
-    int n, capacity;
-
-    printf("Enter number of items: ");
+    int n;
+    printf("Enter number of matrices: ");
     scanf("%d", &n);
 
-    struct Item items[n];
-	int i;
-    for (i = 0; i < n; i++) {
-        printf("Item %d weight: ", i + 1);
-        scanf("%d", &items[i].weight);
-        printf("Item %d price: ", i + 1);
-        scanf("%d", &items[i].price);
-    }
+    int p[n + 1];
+    printf("Enter dimensions array (length %d):\n", n + 1);
+    for (int i = 0; i <= n; i++)
+        scanf("%d", &p[i]);
 
-    printf("Enter knapsack capacity: ");
-    scanf("%d", &capacity);
-
-    float maxProfit = fractionalKnapsack(capacity, items, n);
-    printf("Maximum profit = %.2f\n", maxProfit);
+    matrixChainOrder(p, n + 1);
 
     return 0;
 }
-day5 strassen matrix
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#define MAX 4
 
-// Matrix addition
-void addMatrix(int size, int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX]) {
-    int i, j;
-	for (i = 0; i < size; i++)
-        for (j = 0; j < size; j++)
-            result[i][j] = A[i][j] + B[i][j];
-}
-
-// Matrix subtraction
-void subtractMatrix(int size, int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX]) {
-    int i, j;
-	for (i = 0; i < size; i++)
-        for (j = 0; j < size; j++)
-            result[i][j] = A[i][j] - B[i][j];
-}
-
-// Divide & Conquer multiplication
-void divideConquerMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]) {
-    if (size == 1) {
-        C[0][0] = A[0][0] * B[0][0];
-        return;
-    }
-
-    int newSize = size / 2;
-    int A11[MAX][MAX], A12[MAX][MAX], A21[MAX][MAX], A22[MAX][MAX];
-    int B11[MAX][MAX], B12[MAX][MAX], B21[MAX][MAX], B22[MAX][MAX];
-    int C11[MAX][MAX], C12[MAX][MAX], C21[MAX][MAX], C22[MAX][MAX];
-    int temp1[MAX][MAX], temp2[MAX][MAX];
-
-    // Initialize
-    int i, j;
-    for (i = 0; i < MAX; i++)
-        for (j = 0; j < MAX; j++)
-            C[i][j] = 0;
-
-    // Divide
-    for (i = 0; i < newSize; i++)
-        for (j = 0; j < newSize; j++) {
-            A11[i][j] = A[i][j];
-            A12[i][j] = A[i][j + newSize];
-            A21[i][j] = A[i + newSize][j];
-            A22[i][j] = A[i + newSize][j + newSize];
-            B11[i][j] = B[i][j];
-            B12[i][j] = B[i][j + newSize];
-            B21[i][j] = B[i + newSize][j];
-            B22[i][j] = B[i + newSize][j + newSize];
-        }
-
-    // Recursive calls and combining
-    divideConquerMultiply(newSize, A11, B11, C11);
-    divideConquerMultiply(newSize, A12, B21, temp1);
-    addMatrix(newSize, C11, temp1, C11);
-
-    divideConquerMultiply(newSize, A11, B12, C12);
-    divideConquerMultiply(newSize, A12, B22, temp1);
-    addMatrix(newSize, C12, temp1, C12);
-
-    divideConquerMultiply(newSize, A21, B11, C21);
-    divideConquerMultiply(newSize, A22, B21, temp1);
-    addMatrix(newSize, C21, temp1, C21);
-
-    divideConquerMultiply(newSize, A21, B12, C22);
-    divideConquerMultiply(newSize, A22, B22, temp1);
-    addMatrix(newSize, C22, temp1, C22);
-
-    // Combine results into C
-    for (i = 0; i < newSize; i++)
-        for (j = 0; j < newSize; j++) {
-            C[i][j] = C11[i][j];
-            C[i][j + newSize] = C12[i][j];
-            C[i + newSize][j] = C21[i][j];
-            C[i + newSize][j + newSize] = C22[i][j];
-        }
-}
-
-// Strassen's Multiplication (already optimized)
-void strassenMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]) {
-    if (size == 1) {
-        C[0][0] = A[0][0] * B[0][0];
-        return;
-    }
-
-    int newSize = size / 2;
-    int A11[MAX][MAX], A12[MAX][MAX], A21[MAX][MAX], A22[MAX][MAX];
-    int B11[MAX][MAX], B12[MAX][MAX], B21[MAX][MAX], B22[MAX][MAX];
-    int C11[MAX][MAX], C12[MAX][MAX], C21[MAX][MAX], C22[MAX][MAX];
-    int M1[MAX][MAX], M2[MAX][MAX], M3[MAX][MAX], M4[MAX][MAX];
-    int M5[MAX][MAX], M6[MAX][MAX], M7[MAX][MAX];
-    int temp1[MAX][MAX], temp2[MAX][MAX];
-
-    // Initialize C
-    int i, j;
-    for (i = 0; i < MAX; i++)
-        for (j = 0; j < MAX; j++)
-            C[i][j] = 0;
-
-    // Divide
-    for (i = 0; i < newSize; i++)
-        for (j = 0; j < newSize; j++) {
-            A11[i][j] = A[i][j];
-            A12[i][j] = A[i][j + newSize];
-            A21[i][j] = A[i + newSize][j];
-            A22[i][j] = A[i + newSize][j + newSize];
-
-            B11[i][j] = B[i][j];
-            B12[i][j] = B[i][j + newSize];
-            B21[i][j] = B[i + newSize][j];
-            B22[i][j] = B[i + newSize][j + newSize];
-        }
-
-    // 7 Strassen multiplications
-    addMatrix(newSize, A11, A22, temp1);
-    addMatrix(newSize, B11, B22, temp2);
-    strassenMultiply(newSize, temp1, temp2, M1);
-
-    addMatrix(newSize, A21, A22, temp1);
-    strassenMultiply(newSize, temp1, B11, M2);
-
-    subtractMatrix(newSize, B12, B22, temp2);
-    strassenMultiply(newSize, A11, temp2, M3);
-
-    subtractMatrix(newSize, B21, B11, temp2);
-    strassenMultiply(newSize, A22, temp2, M4);
-
-    addMatrix(newSize, A11, A12, temp1);
-    strassenMultiply(newSize, temp1, B22, M5);
-
-    subtractMatrix(newSize, A21, A11, temp1);
-    addMatrix(newSize, B11, B12, temp2);
-    strassenMultiply(newSize, temp1, temp2, M6);
-
-    subtractMatrix(newSize, A12, A22, temp1);
-    addMatrix(newSize, B21, B22, temp2);
-    strassenMultiply(newSize, temp1, temp2, M7);
-
-    // Combine results
-    addMatrix(newSize, M1, M4, temp1);
-    subtractMatrix(newSize, temp1, M5, temp2);
-    addMatrix(newSize, temp2, M7, C11);
-
-    addMatrix(newSize, M3, M5, C12);
-    addMatrix(newSize, M2, M4, C21);
-
-    subtractMatrix(newSize, M1, M2, temp1);
-    addMatrix(newSize, temp1, M3, temp2);
-    addMatrix(newSize, temp2, M6, C22);
-
-    // Final assembly
-    for (i = 0; i < newSize; i++)
-        for (j = 0; j < newSize; j++) {
-            C[i][j] = C11[i][j];
-            C[i][j + newSize] = C12[i][j];
-            C[i + newSize][j] = C21[i][j];
-            C[i + newSize][j + newSize] = C22[i][j];
-        }
-}
-
-// Print matrix
-void printMatrix(int size, int M[MAX][MAX]) {
-    int i, j;
-	for (i = 0; i < size; i++) {
-        for(j = 0; j < size; j++)
-            printf("%4d ", M[i][j]);
-        printf("\n");
-    }
-}
-void normalMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]){
-	int i, j, k;
-	for(i=0; i<size;i++){
-		for(j=0; j<size;j++){
-			C[i][j]=0;
-			for(k=0; k<size;k++){
-				C[i][j]+= A[i][k]*B[k][j];
-			}
-		}
-	}
-}
-
-int main() {
-    int A[MAX][MAX], B[MAX][MAX], C1[MAX][MAX], C2[MAX][MAX], C3[MAX][MAX];
-    srand(time(NULL));
-
-    // Generate random matrices A and B
-    int i, j;
-    for (i = 0; i < MAX; i++)
-        for (j = 0; j < MAX; j++) {
-            A[i][j] = rand() % 10;
-            B[i][j] = rand() % 10;
-        }
-
-    printf("Matrix A:\n");
-    printMatrix(MAX, A);
-    printf("\nMatrix B:\n");
-    printMatrix(MAX, B);
-
-    clock_t start, end;
-    double time_strassen, time_divide, time_normal;
-
-    // Strassen's execution time
-    start = clock();
-    strassenMultiply(MAX, A, B, C1);
-    end = clock();
-    time_strassen = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-    // Divide & Conquer execution time
-    start = clock();
-    divideConquerMultiply(MAX, A, B, C2);
-    end = clock();
-    time_divide = ((double)(end - start)) / CLOCKS_PER_SEC;
-    
-    start = clock();
-    normalMultiply(MAX, A, B, C3);
-    end = clock();
-    time_normal = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-    printf("\nStrassen's Result:\n");
-    printMatrix(MAX, C1);
-
-    printf("\nDivide and Conquer Result:\n");
-    printMatrix(MAX, C2);
-    
-    printf("\nNormal Matrix Result:\n");
-    printMatrix(MAX, C3);
-
-    printf("\nExecution Time:\n");
-    printf("Strassen's Algorithm: %.6f seconds\n", time_strassen);
-    printf("Divide and Conquer Algorithm: %.6f seconds\n", time_divide);
-    printf("Normal Matrix Multiplication Algorithm: %.6f seconds\n", time_normal);
-
-    return 0;
-}
