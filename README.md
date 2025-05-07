@@ -291,3 +291,241 @@ int main() {
     return 0;
 }
 
+strassen matrix 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 4
+
+// Matrix addition
+void addMatrix(int size, int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX]) {
+    int i, j;
+	for (i = 0; i < size; i++)
+        for (j = 0; j < size; j++)
+            result[i][j] = A[i][j] + B[i][j];
+}
+
+// Matrix subtraction
+void subtractMatrix(int size, int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX]) {
+    int i, j;
+	for (i = 0; i < size; i++)
+        for (j = 0; j < size; j++)
+            result[i][j] = A[i][j] - B[i][j];
+}
+
+// Divide & Conquer multiplication
+void divideConquerMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]) {
+    if (size == 1) {
+        C[0][0] = A[0][0] * B[0][0];
+        return;
+    }
+
+    int newSize = size / 2;
+    int A11[MAX][MAX], A12[MAX][MAX], A21[MAX][MAX], A22[MAX][MAX];
+    int B11[MAX][MAX], B12[MAX][MAX], B21[MAX][MAX], B22[MAX][MAX];
+    int C11[MAX][MAX], C12[MAX][MAX], C21[MAX][MAX], C22[MAX][MAX];
+    int temp1[MAX][MAX], temp2[MAX][MAX];
+
+    // Initialize
+    int i, j;
+    for (i = 0; i < MAX; i++)
+        for (j = 0; j < MAX; j++)
+            C[i][j] = 0;
+
+    // Divide
+    for (i = 0; i < newSize; i++)
+        for (j = 0; j < newSize; j++) {
+            A11[i][j] = A[i][j];
+            A12[i][j] = A[i][j + newSize];
+            A21[i][j] = A[i + newSize][j];
+            A22[i][j] = A[i + newSize][j + newSize];
+            B11[i][j] = B[i][j];
+            B12[i][j] = B[i][j + newSize];
+            B21[i][j] = B[i + newSize][j];
+            B22[i][j] = B[i + newSize][j + newSize];
+        }
+
+    // Recursive calls and combining
+    divideConquerMultiply(newSize, A11, B11, C11);
+    divideConquerMultiply(newSize, A12, B21, temp1);
+    addMatrix(newSize, C11, temp1, C11);
+
+    divideConquerMultiply(newSize, A11, B12, C12);
+    divideConquerMultiply(newSize, A12, B22, temp1);
+    addMatrix(newSize, C12, temp1, C12);
+
+    divideConquerMultiply(newSize, A21, B11, C21);
+    divideConquerMultiply(newSize, A22, B21, temp1);
+    addMatrix(newSize, C21, temp1, C21);
+
+    divideConquerMultiply(newSize, A21, B12, C22);
+    divideConquerMultiply(newSize, A22, B22, temp1);
+    addMatrix(newSize, C22, temp1, C22);
+
+    // Combine results into C
+    for (i = 0; i < newSize; i++)
+        for (j = 0; j < newSize; j++) {
+            C[i][j] = C11[i][j];
+            C[i][j + newSize] = C12[i][j];
+            C[i + newSize][j] = C21[i][j];
+            C[i + newSize][j + newSize] = C22[i][j];
+        }
+}
+
+// Strassen's Multiplication (already optimized)
+void strassenMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]) {
+    if (size == 1) {
+        C[0][0] = A[0][0] * B[0][0];
+        return;
+    }
+
+    int newSize = size / 2;
+    int A11[MAX][MAX], A12[MAX][MAX], A21[MAX][MAX], A22[MAX][MAX];
+    int B11[MAX][MAX], B12[MAX][MAX], B21[MAX][MAX], B22[MAX][MAX];
+    int C11[MAX][MAX], C12[MAX][MAX], C21[MAX][MAX], C22[MAX][MAX];
+    int M1[MAX][MAX], M2[MAX][MAX], M3[MAX][MAX], M4[MAX][MAX];
+    int M5[MAX][MAX], M6[MAX][MAX], M7[MAX][MAX];
+    int temp1[MAX][MAX], temp2[MAX][MAX];
+
+    // Initialize C
+    int i, j;
+    for (i = 0; i < MAX; i++)
+        for (j = 0; j < MAX; j++)
+            C[i][j] = 0;
+
+    // Divide
+    for (i = 0; i < newSize; i++)
+        for (j = 0; j < newSize; j++) {
+            A11[i][j] = A[i][j];
+            A12[i][j] = A[i][j + newSize];
+            A21[i][j] = A[i + newSize][j];
+            A22[i][j] = A[i + newSize][j + newSize];
+
+            B11[i][j] = B[i][j];
+            B12[i][j] = B[i][j + newSize];
+            B21[i][j] = B[i + newSize][j];
+            B22[i][j] = B[i + newSize][j + newSize];
+        }
+
+    // 7 Strassen multiplications
+    addMatrix(newSize, A11, A22, temp1);
+    addMatrix(newSize, B11, B22, temp2);
+    strassenMultiply(newSize, temp1, temp2, M1);
+
+    addMatrix(newSize, A21, A22, temp1);
+    strassenMultiply(newSize, temp1, B11, M2);
+
+    subtractMatrix(newSize, B12, B22, temp2);
+    strassenMultiply(newSize, A11, temp2, M3);
+
+    subtractMatrix(newSize, B21, B11, temp2);
+    strassenMultiply(newSize, A22, temp2, M4);
+
+    addMatrix(newSize, A11, A12, temp1);
+    strassenMultiply(newSize, temp1, B22, M5);
+
+    subtractMatrix(newSize, A21, A11, temp1);
+    addMatrix(newSize, B11, B12, temp2);
+    strassenMultiply(newSize, temp1, temp2, M6);
+
+    subtractMatrix(newSize, A12, A22, temp1);
+    addMatrix(newSize, B21, B22, temp2);
+    strassenMultiply(newSize, temp1, temp2, M7);
+
+    // Combine results
+    addMatrix(newSize, M1, M4, temp1);
+    subtractMatrix(newSize, temp1, M5, temp2);
+    addMatrix(newSize, temp2, M7, C11);
+
+    addMatrix(newSize, M3, M5, C12);
+    addMatrix(newSize, M2, M4, C21);
+
+    subtractMatrix(newSize, M1, M2, temp1);
+    addMatrix(newSize, temp1, M3, temp2);
+    addMatrix(newSize, temp2, M6, C22);
+
+    // Final assembly
+    for (i = 0; i < newSize; i++)
+        for (j = 0; j < newSize; j++) {
+            C[i][j] = C11[i][j];
+            C[i][j + newSize] = C12[i][j];
+            C[i + newSize][j] = C21[i][j];
+            C[i + newSize][j + newSize] = C22[i][j];
+        }
+}
+
+// Print matrix
+void printMatrix(int size, int M[MAX][MAX]) {
+    int i, j;
+	for (i = 0; i < size; i++) {
+        for(j = 0; j < size; j++)
+            printf("%4d ", M[i][j]);
+        printf("\n");
+    }
+}
+void normalMultiply(int size, int A[MAX][MAX], int B[MAX][MAX], int C[MAX][MAX]){
+	int i, j, k;
+	for(i=0; i<size;i++){
+		for(j=0; j<size;j++){
+			C[i][j]=0;
+			for(k=0; k<size;k++){
+				C[i][j]+= A[i][k]*B[k][j];
+			}
+		}
+	}
+}
+
+int main() {
+    int A[MAX][MAX], B[MAX][MAX], C1[MAX][MAX], C2[MAX][MAX], C3[MAX][MAX];
+    srand(time(NULL));
+
+    // Generate random matrices A and B
+    int i, j;
+    for (i = 0; i < MAX; i++)
+        for (j = 0; j < MAX; j++) {
+            A[i][j] = rand() % 10;
+            B[i][j] = rand() % 10;
+        }
+
+    printf("Matrix A:\n");
+    printMatrix(MAX, A);
+    printf("\nMatrix B:\n");
+    printMatrix(MAX, B);
+
+    clock_t start, end;
+    double time_strassen, time_divide, time_normal;
+
+    // Strassen's execution time
+    start = clock();
+    strassenMultiply(MAX, A, B, C1);
+    end = clock();
+    time_strassen = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    // Divide & Conquer execution time
+    start = clock();
+    divideConquerMultiply(MAX, A, B, C2);
+    end = clock();
+    time_divide = ((double)(end - start)) / CLOCKS_PER_SEC;
+    
+    start = clock();
+    normalMultiply(MAX, A, B, C3);
+    end = clock();
+    time_normal = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    printf("\nStrassen's Result:\n");
+    printMatrix(MAX, C1);
+
+    printf("\nDivide and Conquer Result:\n");
+    printMatrix(MAX, C2);
+    
+    printf("\nNormal Matrix Result:\n");
+    printMatrix(MAX, C3);
+
+    printf("\nExecution Time:\n");
+    printf("Strassen's Algorithm: %.6f seconds\n", time_strassen);
+    printf("Divide and Conquer Algorithm: %.6f seconds\n", time_divide);
+    printf("Normal Matrix Multiplication Algorithm: %.6f seconds\n", time_normal);
+
+    return 0;
+}
