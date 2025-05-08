@@ -1,3 +1,156 @@
+day3p2
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define SIZE 3
+
+void generateMatrix(int matrix[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            matrix[i][j] = (rand() % 100) + 1;  // random number between 1–100
+}
+
+void writeMatrixToFile(int matrix[SIZE][SIZE], const char *filename) {
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Error opening file %s\n", filename);
+        exit(1);
+    }
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            fprintf(fp, "%d ", matrix[i][j]);
+    fclose(fp);
+}
+
+void readMatrixFromFile(int matrix[SIZE][SIZE], const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file %s\n", filename);
+        exit(1);
+    }
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            fscanf(fp, "%d", &matrix[i][j]);
+    fclose(fp);
+}
+
+void multiplyMatrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++) {
+            result[i][j] = 0;
+            for (int k = 0; k < SIZE; k++)
+                result[i][j] += a[i][k] * b[k][j];
+        }
+}
+
+void displayMatrix(int matrix[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++)
+            printf("%5d ", matrix[i][j]);
+        printf("\n");
+    }
+}
+
+int main() {
+    int matrix1[SIZE][SIZE], matrix2[SIZE][SIZE], result[SIZE][SIZE];
+    srand(time(NULL));  // seed random generator
+
+    generateMatrix(matrix1);
+    generateMatrix(matrix2);
+
+    writeMatrixToFile(matrix1, "MATRIX1.TXT");
+    writeMatrixToFile(matrix2, "MATRIX2.TXT");
+
+    readMatrixFromFile(matrix1, "MATRIX1.TXT");
+    readMatrixFromFile(matrix2, "MATRIX2.TXT");
+
+    multiplyMatrices(matrix1, matrix2, result);
+
+    printf("Matrix 1:\n");
+    displayMatrix(matrix1);
+
+    printf("\nMatrix 2:\n");
+    displayMatrix(matrix2);
+
+    printf("\nResult of multiplication:\n");
+    displayMatrix(result);
+
+    return 0;
+}
+
+day4p1
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// QuickSort using one variable for comparison (inline swapping)
+void quicksort_one_var(int arr[], int low, int high) {
+    if (low < high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                int temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = temp;
+        int pi = i + 1;
+        quicksort_one_var(arr, low, pi - 1);
+        quicksort_one_var(arr, pi + 1, high);
+    }
+}
+
+// QuickSort using two variables for comparison (explicit i, j)
+void quicksort_two_var(int arr[], int low, int high) {
+    if (low < high) {
+        int pivot = arr[high], i = low, j = low;
+        for (; j < high; j++) {
+            if (arr[j] < pivot) {
+                int temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+                i++;
+            }
+        }
+        int temp = arr[i]; arr[i] = arr[high]; arr[high] = temp;
+        int pi = i;
+        quicksort_two_var(arr, low, pi - 1);
+        quicksort_two_var(arr, pi + 1, high);
+    }
+}
+
+void copy_array(int src[], int dest[], int size) {
+    for (int i = 0; i < size; i++)
+        dest[i] = src[i];
+}
+
+int main() {
+    int size = 10000;
+    int *arr1 = (int *)malloc(size * sizeof(int));
+    int *arr2 = (int *)malloc(size * sizeof(int));
+    srand(time(0));
+    for (int i = 0; i < size; i++)
+        arr1[i] = rand() % 100000;
+    copy_array(arr1, arr2, size);
+
+    clock_t start = clock();
+    quicksort_one_var(arr1, 0, size - 1);
+    clock_t end = clock();
+    double time_one = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Execution time (one variable): %f seconds\n", time_one);
+
+    start = clock();
+    quicksort_two_var(arr2, 0, size - 1);
+    end = clock();
+    double time_two = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Execution time (two variables): %f seconds\n", time_two);
+
+    free(arr1);
+    free(arr2);
+    return 0;
+}
+
+
 day7p1 knsapack hai 
 day7p2 job sequincing 
 #include <stdio.h>
