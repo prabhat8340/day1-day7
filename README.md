@@ -214,7 +214,7 @@ int main() {
     return 0;
 }
 
-day6p2 bpf
+day6p2 bps
 
 #include <stdio.h>
 
